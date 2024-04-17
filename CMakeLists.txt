@@ -4,6 +4,11 @@ project(fsm)
 
 find_package(GDAL)
 
+option(USE_GDAL "GDAL is required to save FSM outputs" ON)
+
+find_package(Boost COMPONENTS serialization system REQUIRED)
+message(STATUS "Found Boost ${BOOST_VERSION}")
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_program(CCACHE_FOUND ccache)
@@ -17,25 +22,34 @@ add_subdirectory(submodules/dephier EXCLUDE_FROM_ALL)
 
 add_library(fsm INTERFACE)
 target_include_directories(fsm INTERFACE include/)
-target_link_libraries(fsm INTERFACE dephier)
 
 # include_directories(submodules)
+option(USE_BOOST "Compile code using Boost to enable input-output of the full depression hierarchy." OFF)
+if(USE_BOOST)
+  target_link_libraries(fsm INTERFACE dephier Boost::serialization)
 
-if(USE_GDAL AND GDAL_FOUND)
-  add_executable(fsm_paper_tests.exe paper/fsm_paper_tests.cpp)
-  target_link_libraries(fsm_paper_tests.exe PRIVATE fsm richdem)
-  target_compile_features(fsm_paper_tests.exe PUBLIC cxx_auto_type cxx_std_17)
+  add_executable(fsm_boost.exe src/main_boost.cpp)
+  target_link_libraries(fsm_boost.exe PRIVATE fsm richdem)
+  target_compile_features(fsm_boost.exe PUBLIC cxx_auto_type cxx_std_17)
 
-  add_executable(fsm_paper_speed_comparison.exe paper/fsm_paper_speed_comparison.cpp)
-  target_link_libraries(fsm_paper_speed_comparison.exe PRIVATE fsm richdem)
-  target_compile_features(fsm_paper_speed_comparison.exe PUBLIC cxx_auto_type cxx_std_17)
+else()
+  target_link_libraries(fsm INTERFACE dephier)
 
   add_executable(fsm.exe src/main.cpp)
   target_link_libraries(fsm.exe PRIVATE fsm richdem)
   target_compile_features(fsm.exe PUBLIC cxx_auto_type cxx_std_17)
-else()
-  message(WARNING "GDAL is needed to build some of the FSM performance tests and example programs; it is not needed to use the FSM library in another project.")
+
+  message(WARNING "You are compiling without Boost. You will not be able to save or load the depression hierarchy if running FSM multiple times in the same region.")
 endif()
+
+add_executable(fsm_paper_tests.exe paper/fsm_paper_tests.cpp)
+target_link_libraries(fsm_paper_tests.exe PRIVATE fsm richdem)
+target_compile_features(fsm_paper_tests.exe PUBLIC cxx_auto_type cxx_std_17)
+
+add_executable(fsm_paper_speed_comparison.exe paper/fsm_paper_speed_comparison.cpp)
+target_link_libraries(fsm_paper_speed_comparison.exe PRIVATE fsm richdem)
+target_compile_features(fsm_paper_speed_comparison.exe PUBLIC cxx_auto_type cxx_std_17)
+
 
 add_executable(fsm_paper_scaling_tests.exe paper/fsm_paper_scaling_tests.cpp)
 target_link_libraries(fsm_paper_scaling_tests.exe PRIVATE fsm richdem)
