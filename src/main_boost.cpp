@@ -116,7 +116,6 @@ int main(int argc, char **argv){
   //We need to load in 3 pieces of data: the DH, the labels array, and the flowdirs array.
   else{
 
-
     try{
       restore_dh(deps, (load_dh_filename+"_DH.txt").c_str());           //load the DH
 
@@ -141,12 +140,7 @@ int main(int argc, char **argv){
     }
   }
 
-  //run FSM on the DH:
-  dh::FillSpillMerge(topo, label, flowdirs, deps, wtd);
 
-  timer_calc.stop();
-
-  timer_io.start();
 
   //If we are saving the data from this depression hierarchy to reuse with FSM later, do so here:
   if(!save_dh_filename.empty()){
@@ -176,6 +170,15 @@ int main(int argc, char **argv){
         std::cerr << "Unable to open file." << std::endl;
     }
   }
+
+  //run FSM on the DH:
+  dh::FillSpillMerge(topo, label, flowdirs, deps, wtd);
+
+  timer_calc.stop();
+
+  timer_io.start();
+
+
 
   //Output the water table depth
   wtd.saveGDAL(output_prefix+"-wtd.tif");
