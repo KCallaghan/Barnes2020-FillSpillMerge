@@ -93,7 +93,7 @@ Compilation
 
 Be sure to acquire submodules either upon initially obtaining the repository:
 
-    git clone --recurse-submodules -j8 https://github.com/r-barnes/Barnes2020-FillSpillMerge
+    git clone --recurse-submodules -j8 https://github.com/KCallaghan/Barnes2020-FillSpillMerge
 
 Or afterwards by using the following within the repository itself:
 
