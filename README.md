@@ -107,6 +107,13 @@ Afterwards, compile:
     cd build
     cmake -DCMAKE_BUILD_TYPE=Release -DUSE_GDAL=ON ..
     make -j 4 # Set to number of CPUs for a faster compilation (4 here)
+    
+To compile using Boost, use:
+
+    mkdir build
+    cd build
+    cmake -DCMAKE_BUILD_TYPE=Release -DUSE_BOOST=ON -DBOOST_ROOT=/boost/folder ..
+    make -j 4 # Set to number of CPUs for a faster compilation (4 here)
 
 ### Mac
 
